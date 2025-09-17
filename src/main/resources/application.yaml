@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require
+    username: postgres.qxlnxqzfnkrxxxakyvdt
+    password: SebasyLisa0809
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+app:
+  jwt:
+    secret: "change-this-secret-to-a-very-long-random-value-32b-min"
+    access-ttl-sec: 3600
+    refresh-ttl-sec: 1209600
