@@ -1,18 +1,30 @@
 spring:
+  mvc:
+    servlet:
+      path: /api
+
   datasource:
-    url: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require
+    url: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&preferQueryMode=simple
     username: postgres.qxlnxqzfnkrxxxakyvdt
     password: SebasyLisa0809
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: validate
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
+        jdbc.time_zone: UTC
+
   jackson:
     serialization:
       write-dates-as-timestamps: false
+
+server:
+  error:
+    include-message: always
 
 app:
   jwt:
