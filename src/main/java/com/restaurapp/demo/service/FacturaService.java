@@ -5,10 +5,13 @@ import com.restaurapp.demo.dto.FacturaListDto;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public interface FacturaService {
-    Long emitir(Long pedidoId); // crea factura (si saldo=0) y cierra el pedido
+    Long emitir(Long pedidoId);
     FacturaDto detalle(Long facturaId);
-    Page<FacturaListDto> listar(Long mesaId, Long meseroId, LocalDateTime desde, LocalDateTime hasta,
+
+    Page<FacturaListDto> listar(Long mesaId, UUID meseroId,
+                                LocalDateTime desde, LocalDateTime hasta,
                                 int page, int size, String sort);
 }

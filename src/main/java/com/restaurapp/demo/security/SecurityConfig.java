@@ -1,6 +1,7 @@
 package com.restaurapp.demo.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;          // <-- nuevo
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;                                      // <-- nuevo
 import java.util.List;
 
 @Configuration
@@ -35,16 +37,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource(null))) // usa el bean de abajo
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(json401EntryPoint()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/actuator/health").permitAll()
-                        // (opcional) documentación pública
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider())        // 👈 registrar provider
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -70,7 +71,6 @@ public class SecurityConfig {
 
     // --- Helpers ---
 
-    /** Devuelve 401 JSON cuando falta/fracasa la autenticación Bearer. */
     @Bean
     public AuthenticationEntryPoint json401EntryPoint() {
         return (request, response, authException) -> {
@@ -91,14 +91,21 @@ public class SecurityConfig {
         return s.replace("\"", "\\\"");
     }
 
-    /** CORS para Angular (ajusta origin según tu front). */
+    /** CORS parametrizable por ambiente: app.cors.allowed-origins=orig1,orig2 */
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${app.cors.allowed-origins:http://localhost:4200}") String allowedOrigins) {
+
+        List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .toList();
+
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("http://localhost:4200")); // <-- cambia si aplica
+        cfg.setAllowedOrigins(origins);
         cfg.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
-        cfg.setExposedHeaders(List.of(HttpHeaders.AUTHORIZATION, "X-Total-Count"));
+        cfg.setExposedHeaders(List.of(HttpHeaders.AUTHORIZATION, "X-Total-Count", "Content-Disposition"));
         cfg.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

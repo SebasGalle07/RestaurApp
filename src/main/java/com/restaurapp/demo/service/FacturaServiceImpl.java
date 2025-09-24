@@ -1,12 +1,11 @@
 package com.restaurapp.demo.service;
 
-import com.restaurapp.demo.domain.*;
+import com.restaurapp.demo.domain.Factura;
+import com.restaurapp.demo.domain.PedidoEstado;
 import com.restaurapp.demo.dto.FacturaDto;
 import com.restaurapp.demo.dto.FacturaListDto;
 import com.restaurapp.demo.repository.FacturaRepository;
 import com.restaurapp.demo.repository.PedidoRepository;
-import com.restaurapp.demo.service.FacturaService;
-import com.restaurapp.demo.service.PagoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ public class FacturaServiceImpl implements FacturaService {
 
     private final FacturaRepository facturaRepo;
     private final PedidoRepository pedidoRepo;
-    private final PagoService pagoService; // usamos para calcular saldo pendiente
+    private final PagoService pagoService;
 
     private FacturaDto toDto(Factura f) {
         var p = f.getPedido();
@@ -32,7 +31,7 @@ public class FacturaServiceImpl implements FacturaService {
                 p.getId(),
                 p.getMesa().getId(),
                 p.getMesa().getNumero(),
-                p.getMeseroId(),
+                p.getMeseroId(),            // UUID en DTO si corresponde
                 f.getTotal(),
                 f.getFechaEmision()
         );
@@ -46,7 +45,7 @@ public class FacturaServiceImpl implements FacturaService {
                 p.getId(),
                 p.getMesa().getId(),
                 p.getMesa().getNumero(),
-                p.getMeseroId(),
+                p.getMeseroId(),            // UUID en DTO si corresponde
                 f.getTotal(),
                 f.getFechaEmision()
         );
@@ -70,24 +69,19 @@ public class FacturaServiceImpl implements FacturaService {
             throw new IllegalStateException("No se puede facturar: saldo pendiente " + saldo);
         }
 
-        // Crear factura con total del pedido; el numero lo generamos luego usando el id
-        Factura f = new Factura();
+        var f = new Factura();
         f.setPedido(pedido);
         f.setTotal(pedido.getTotal());
-        f.setNumero("PEND"); // placeholder
-        facturaRepo.saveAndFlush(f); // aseguramos id
+        f.setNumero("PEND");
+        facturaRepo.saveAndFlush(f);
 
-        //  Generar numero basado en id (único y transaccional)
-        String numero = "F-" + String.format("%08d", f.getId());
-        f.setNumero(numero);
-
-        // Marcar pedido como CERRADO
+        f.setNumero("F-" + String.format("%08d", f.getId()));
         pedido.setEstado(PedidoEstado.CERRADO);
-
         return f.getId();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public FacturaDto detalle(Long facturaId) {
         var f = facturaRepo.findById(facturaId)
                 .orElseThrow(() -> new IllegalArgumentException("Factura no encontrada"));
@@ -95,14 +89,36 @@ public class FacturaServiceImpl implements FacturaService {
     }
 
     @Override
-    // <-- CORRECCIÓN: Cambiado de Long a UUID para meseroId
-    public Page<FacturaListDto> listar(Long mesaId, UUID meseroId, LocalDateTime desde, LocalDateTime hasta,
-                                       int page, int size, String sort) {
-        String[] s = (sort == null || sort.isBlank()) ? new String[]{"fechaEmision","desc"} : sort.split(",");
-        Sort.Direction dir = (s.length > 1 && "asc".equalsIgnoreCase(s[1])) ? Sort.Direction.ASC : Sort.Direction.DESC;
-        var pr = PageRequest.of(page, size, Sort.by(dir, s[0]));
+    @Transactional(readOnly = true)
+    public Page<FacturaListDto> listar(Long mesaId,
+                                       UUID meseroId,     // ← UUID para coincidir con repo & dominio
+                                       LocalDateTime desde,
+                                       LocalDateTime hasta,
+                                       int page,
+                                       int size,
+                                       String sort) {
+        int p = Math.max(page, 0);
+        int s = Math.min(Math.max(size, 1), 200);
 
-        // Ahora la llamada al repositorio es correcta
-        return facturaRepo.buscar(mesaId, meseroId, desde, hasta, pr).map(this::toListDto);
+        Sort sortObj = buildSort(sort); // tu helper de sort
+        Pageable pageable = PageRequest.of(p, s, sortObj);
+
+        return facturaRepo.buscar(mesaId, meseroId, desde, hasta, pageable)
+                .map(this::toListDto);
+    }
+
+
+    private Sort buildSort(String sort) {
+        String defaultField = "fechaEmision";
+        Sort.Direction defaultDir = Sort.Direction.DESC;
+
+        if (sort == null || sort.isBlank()) return Sort.by(defaultDir, defaultField);
+
+        String[] parts = sort.split(",", 2);
+        String field = parts[0].trim();
+        String dir = (parts.length > 1 ? parts[1].trim().toLowerCase() : "desc");
+
+        Sort.Direction direction = ("asc".equals(dir)) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        return Sort.by(direction, field.isEmpty() ? defaultField : field);
     }
 }

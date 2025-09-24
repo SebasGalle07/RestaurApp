@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID; // <-- CORRECCIÓN: importar UUID
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class FacturasController {
     @PreAuthorize("hasAnyRole('ADMIN','CAJERO')")
     public Map<String, Object> listar(
             @RequestParam(required = false, name = "mesa_id") Long mesaId,
-            @RequestParam(required = false, name = "mesero_id") Long meseroId,
+            @RequestParam(required = false, name = "mesero_id") UUID meseroId, // <-- CORRECCIÓN: UUID
             @RequestParam(required = false) String desde,
             @RequestParam(required = false) String hasta,
             @RequestParam(defaultValue = "0") int page,

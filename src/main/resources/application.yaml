@@ -19,3 +19,14 @@ app:
     secret: "change-this-secret-to-a-very-long-random-value-32b-min"
     access-ttl-sec: 3600
     refresh-ttl-sec: 1209600
+  cors:
+    allowed-origins: http://localhost:4200
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
