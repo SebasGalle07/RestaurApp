@@ -1,18 +1,18 @@
 package com.restaurapp.demo.dto;
 
-import com.restaurapp.demo.domain.Role;
 import lombok.*;
-
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 @Builder
 public class UserDto {
     private UUID id;
-    private String nombre;
     private String email;
-    private Role rol;
-    private boolean activo;
+    private String nombre;
+    private String rol;          // en minúsculas: "admin", "mesero", etc.
+    private Boolean activo;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

@@ -32,9 +32,21 @@ public class UserController {
         return ResponseEntity.ok(Map.of("success", true, "data", out));
     }
 
+    // Detalle por UUID (ruta existente para compatibilidad)
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> detail(@PathVariable UUID id) {
-        return ResponseEntity.ok(Map.of("success", true, "data", mapper.toDto(service.get(id))));
+        return ResponseEntity.ok(
+                Map.of("success", true, "data", mapper.toDto(service.get(id)))
+        );
+    }
+
+    // NUEVO: Detalle por código numérico (más amigable)
+    @GetMapping("/codigo/{codigo}")
+    public ResponseEntity<Map<String, Object>> detailByCodigo(@PathVariable Long codigo) {
+        var user = service.getByCodigo(codigo); // método simple en service que delega a repo.findByCodigo(...)
+        return ResponseEntity.ok(
+                Map.of("success", true, "data", mapper.toDto(user))
+        );
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -43,7 +55,8 @@ public class UserController {
         var body = Map.of(
                 "success", true,
                 "message", "Usuario creado.",
-                "data", Map.of("id", created.getId())
+                // devolvemos también el código numérico para que el front lo pueda usar
+                "data", Map.of("id", created.getId(), "codigo", created.getCodigo())
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }

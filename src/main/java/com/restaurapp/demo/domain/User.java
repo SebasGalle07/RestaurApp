@@ -1,5 +1,6 @@
 package com.restaurapp.demo.domain;
 
+import com.restaurapp.demo.domain.RoleAttributeConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +15,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+
+    @Column(unique = true, nullable = false, insertable = false, updatable = false)
+    private Long codigo;
 
     @Column(nullable = false)
     private String nombre;
