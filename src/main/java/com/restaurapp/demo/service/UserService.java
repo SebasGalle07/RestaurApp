@@ -59,7 +59,7 @@ public class UserService {
     @Transactional
     public User create(CreateUserDto dto) {
         if (repo.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("El email ya está registrado: " + dto.getEmail());
+            throw new IllegalArgumentException("El email ya esta registrado: " + dto.getEmail());
         }
 
         User u = User.builder()
@@ -93,7 +93,7 @@ public class UserService {
 
         if (dto.getEmail() != null && !dto.getEmail().equalsIgnoreCase(u.getEmail())) {
             if (repo.existsByEmail(dto.getEmail())) {
-                throw new IllegalArgumentException("El email ya está registrado: " + dto.getEmail());
+                throw new IllegalArgumentException("El email ya esta registrado: " + dto.getEmail());
             }
             u.setEmail(dto.getEmail());
         }

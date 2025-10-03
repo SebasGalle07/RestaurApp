@@ -49,7 +49,7 @@ public class MenuServiceImpl implements MenuService {
     @Transactional
     public Long crear(MenuCreateDto dto) {
         Categoria cat = categoriaRepo.findById(dto.categoria_id())
-                .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
+                .orElseThrow(() -> new IllegalArgumentException("Categoria no encontrada"));
         MenuItem e = MenuItem.builder()
                 .nombre(dto.nombre().trim())
                 .descripcion(dto.descripcion())
@@ -62,21 +62,21 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public MenuDto detalle(Long id) {
-        MenuItem e = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Ítem no encontrado"));
+        MenuItem e = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Item no encontrado"));
         return toDto(e);
     }
 
     @Override
     @Transactional
     public void patch(Long id, MenuPatchDto dto) {
-        MenuItem e = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Ítem no encontrado"));
+        MenuItem e = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Item no encontrado"));
         if (dto.nombre() != null) e.setNombre(dto.nombre().trim());
         if (dto.descripcion() != null) e.setDescripcion(dto.descripcion());
         if (dto.precio() != null) e.setPrecio(dto.precio());
         if (dto.activo() != null) e.setActivo(dto.activo());
         if (dto.categoria_id() != null) {
             Categoria cat = categoriaRepo.findById(dto.categoria_id())
-                    .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
+                    .orElseThrow(() -> new IllegalArgumentException("Categoria no encontrada"));
             e.setCategoria(cat);
         }
     }
@@ -84,7 +84,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     @Transactional
     public void eliminar(Long id) {
-        MenuItem e = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Ítem no encontrado"));
+        MenuItem e = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Item no encontrado"));
         repo.delete(e);
         // Si hay FK desde pedido_items(item_menu_id), la BD impedirá borrar → captúralo con tu @ControllerAdvice como 409.
     }

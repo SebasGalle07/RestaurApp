@@ -35,7 +35,7 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public Page<PedidoListDto> listar(Long mesaId, PedidoEstado estado, LocalDateTime desde, LocalDateTime hasta,
                                       int page, int size, String sort) {
-        String[] s = (sort == null || sort.isBlank()) ? new String[]{"id","desc"} : sort.split(",");
+        String[] s = (sort == null || sort.isBlank()) ? new String[] { "id", "desc" } : sort.split(",");
         Sort.Direction dir = (s.length > 1 && "asc".equalsIgnoreCase(s[1])) ? Sort.Direction.ASC : Sort.Direction.DESC;
         var pr = PageRequest.of(page, size, Sort.by(dir, s[0]));
         return pedidoRepo.buscar(mesaId, estado, desde, hasta, pr).map(this::toListDto);
@@ -87,8 +87,10 @@ public class PedidoServiceImpl implements PedidoService {
         if (p.getEstado() == PedidoEstado.CERRADO || p.getEstado() == PedidoEstado.CANCELADO) {
             throw new IllegalStateException("Pedido no editable en estado " + p.getEstado());
         }
-        if (dto.mesero_id() != null) p.setMeseroId(dto.mesero_id());
-        if (dto.notas() != null) p.setNotas(dto.notas());
+        if (dto.mesero_id() != null)
+            p.setMeseroId(dto.mesero_id());
+        if (dto.notas() != null)
+            p.setNotas(dto.notas());
     }
 
     @Override
@@ -96,7 +98,7 @@ public class PedidoServiceImpl implements PedidoService {
     public void enviarACocina(Long id) {
         var p = pedidoRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado"));
         if (p.getEstado() != PedidoEstado.ABIERTO) {
-            throw new IllegalStateException("Solo se puede enviar a cocina desde estado ABIERTPO");
+            throw new IllegalStateException("Solo se puede enviar a cocina desde estado ABIERTO");
         }
         p.setEstado(PedidoEstado.EN_PREPARACION);
         p.getItems().forEach(it -> {
@@ -141,13 +143,11 @@ public class PedidoServiceImpl implements PedidoService {
                 p.getMeseroId(),
                 p.getEstado().name(),
                 p.getTotal(),
-                p.getCreatedAt()
-        );
+                p.getCreatedAt());
     }
 
     private PedidoDto toDto(Pedido p) {
-        var items = p.getItems().stream().map(it ->
-                new PedidoItemDto(
+        var items = p.getItems().stream().map(it -> new PedidoItemDto(
                         it.getId(),
                         it.getItemMenu().getId(),
                         it.getItemMenu().getNombre(),
@@ -155,9 +155,7 @@ public class PedidoServiceImpl implements PedidoService {
                         it.getPrecioUnitario(),
                         it.getSubtotal(),
                         it.getEstadoPreparacion().name(),
-                        it.getNotas()
-                )
-        ).toList();
+                it.getNotas())).toList();
 
         return new PedidoDto(
                 p.getId(),
@@ -169,7 +167,6 @@ public class PedidoServiceImpl implements PedidoService {
                 p.getNotas(),
                 p.getCreatedAt(),
                 p.getUpdatedAt(),
-                items
-        );
+                items);
     }
 }

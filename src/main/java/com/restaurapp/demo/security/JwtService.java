@@ -44,7 +44,7 @@ public class JwtService {
         if (keyBytes.length < 32) {
             throw new IllegalArgumentException(
                     "app.jwt.secret debe tener al menos 32 bytes (256 bits). " +
-                            "Actualiza tu secret o usa app.jwt.base64=true si ya está en Base64."
+                            "Actualiza tu secret o usa app.jwt.base64=true si ya esta en Base64."
             );
         }
         return Keys.hmacShaKeyFor(keyBytes);

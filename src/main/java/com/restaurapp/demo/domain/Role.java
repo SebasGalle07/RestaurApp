@@ -28,6 +28,6 @@ public enum Role {
                 return r;
             }
         }
-        throw new IllegalArgumentException("Rol inválido: " + value);
+        throw new IllegalArgumentException("Rol invalido: " + value);
     }
 }

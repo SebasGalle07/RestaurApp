@@ -40,7 +40,7 @@ public class MenuController {
     @PreAuthorize("hasRole('ADMIN')")
     public Map<String, Object> crear(@Valid @RequestBody MenuCreateDto body) {
         Long id = service.crear(body);
-        return Map.of("success", true, "data", Map.of("id", id), "message", "Ítem creado.");
+        return Map.of("success", true, "data", Map.of("id", id), "message", "Item creado.");
     }
 
     // GET /menu/{id}
@@ -55,7 +55,7 @@ public class MenuController {
     @PreAuthorize("hasRole('ADMIN')")
     public Map<String, Object> patch(@PathVariable Long id, @Valid @RequestBody MenuPatchDto body) {
         service.patch(id, body);
-        return Map.of("success", true, "message", "Ítem actualizado.");
+        return Map.of("success", true, "message", "Item actualizado.");
     }
 
     // DELETE /menu/{id}
@@ -63,6 +63,6 @@ public class MenuController {
     @PreAuthorize("hasRole('ADMIN')")
     public Map<String, Object> eliminar(@PathVariable Long id) {
         service.eliminar(id);
-        return Map.of("success", true, "message", "Ítem eliminado.");
+        return Map.of("success", true, "message", "Item eliminado.");
     }
 }

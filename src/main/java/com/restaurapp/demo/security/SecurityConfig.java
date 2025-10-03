@@ -1,9 +1,10 @@
 package com.restaurapp.demo.security;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;          // <-- nuevo
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,27 +24,31 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;                                      // <-- nuevo
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final DbUserDetailsService userDetailsService;
 
+    @Value("${app.cors.allowed-origins:http://localhost:4200}")
+    private String allowedOrigins;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource(null))) // usa el bean de abajo
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(json401EntryPoint()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/**",   // <--- agrega este
-                                "/auth/**",       // opcional, si mantienes rutas sin /api
+                                "/api/auth/**",
+                                "/auth/**",
                                 "/actuator/health",
                                 "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"
                         ).permitAll()
@@ -97,13 +102,19 @@ public class SecurityConfig {
 
     /** CORS parametrizable por ambiente: app.cors.allowed-origins=orig1,orig2 */
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(
-            @Value("${app.cors.allowed-origins:http://localhost:4200}") String allowedOrigins) {
+    public CorsConfigurationSource corsConfigurationSource() {
+        String value = (allowedOrigins == null || allowedOrigins.isBlank())
+                ? "http://localhost:4200"
+                : allowedOrigins;
 
-        List<String> origins = Arrays.stream(allowedOrigins.split(","))
+        List<String> origins = Arrays.stream(value.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isBlank())
                 .toList();
+
+        if (origins.isEmpty()) {
+            origins = List.of("http://localhost:4200");
+        }
 
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(origins);

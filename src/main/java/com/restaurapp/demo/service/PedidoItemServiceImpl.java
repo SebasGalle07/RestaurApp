@@ -31,8 +31,7 @@ public class PedidoItemServiceImpl implements PedidoItemService {
                 it.getPrecioUnitario(),
                 it.getSubtotal(),
                 it.getEstadoPreparacion().name(),
-                it.getNotas()
-        );
+                it.getNotas());
     }
 
     @Override
@@ -61,6 +60,7 @@ public class PedidoItemServiceImpl implements PedidoItemService {
         it.setNotas(dto.notas());
 
         p.getItems().add(it);
+        itemRepo.save(it);
         recalcularTotal(p);
         return it.getId();
     }
@@ -68,7 +68,8 @@ public class PedidoItemServiceImpl implements PedidoItemService {
     @Override
     public PedidoItemDto detalle(Long pedidoId, Long detalleId) {
         var it = itemRepo.findById(detalleId).orElseThrow(() -> new IllegalArgumentException("Detalle no encontrado"));
-        if (!it.getPedido().getId().equals(pedidoId)) throw new IllegalArgumentException("Detalle no pertenece al pedido");
+        if (!it.getPedido().getId().equals(pedidoId))
+            throw new IllegalArgumentException("Detalle no pertenece al pedido");
         return toDto(it);
     }
 
@@ -77,7 +78,8 @@ public class PedidoItemServiceImpl implements PedidoItemService {
     public void patch(Long pedidoId, Long detalleId, PedidoItemPatchDto dto) {
         var it = itemRepo.findById(detalleId).orElseThrow(() -> new IllegalArgumentException("Detalle no encontrado"));
         var p = it.getPedido();
-        if (!p.getId().equals(pedidoId)) throw new IllegalArgumentException("Detalle no pertenece al pedido");
+        if (!p.getId().equals(pedidoId))
+            throw new IllegalArgumentException("Detalle no pertenece al pedido");
         if (p.getEstado() == PedidoEstado.CERRADO || p.getEstado() == PedidoEstado.CANCELADO) {
             throw new IllegalStateException("Pedido no editable en estado " + p.getEstado());
         }
@@ -85,7 +87,8 @@ public class PedidoItemServiceImpl implements PedidoItemService {
             it.setCantidad(dto.cantidad());
             it.setSubtotal(it.getPrecioUnitario().multiply(BigDecimal.valueOf(dto.cantidad())));
         }
-        if (dto.notas() != null) it.setNotas(dto.notas());
+        if (dto.notas() != null)
+            it.setNotas(dto.notas());
         recalcularTotal(p);
     }
 
@@ -94,7 +97,8 @@ public class PedidoItemServiceImpl implements PedidoItemService {
     public void eliminar(Long pedidoId, Long detalleId) {
         var it = itemRepo.findById(detalleId).orElseThrow(() -> new IllegalArgumentException("Detalle no encontrado"));
         var p = it.getPedido();
-        if (!p.getId().equals(pedidoId)) throw new IllegalArgumentException("Detalle no pertenece al pedido");
+        if (!p.getId().equals(pedidoId))
+            throw new IllegalArgumentException("Detalle no pertenece al pedido");
         if (p.getEstado() == PedidoEstado.CERRADO || p.getEstado() == PedidoEstado.CANCELADO) {
             throw new IllegalStateException("Pedido no editable en estado " + p.getEstado());
         }
@@ -108,26 +112,34 @@ public class PedidoItemServiceImpl implements PedidoItemService {
     public void actualizarEstado(Long pedidoId, Long detalleId, ItemEstadoPatchDto dto) {
         var it = itemRepo.findById(detalleId).orElseThrow(() -> new IllegalArgumentException("Detalle no encontrado"));
         var p = it.getPedido();
-        if (!p.getId().equals(pedidoId)) throw new IllegalArgumentException("Detalle no pertenece al pedido");
+        if (!p.getId().equals(pedidoId))
+            throw new IllegalArgumentException("Detalle no pertenece al pedido");
 
         ItemEstado nuevo;
-        try { nuevo = ItemEstado.valueOf(dto.estado_preparacion().toUpperCase()); }
-        catch (IllegalArgumentException ex) { throw new IllegalArgumentException("Estado inválido"); }
+        try {
+            nuevo = ItemEstado.valueOf(dto.estado_preparacion().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Estado inválido");
+        }
 
         // Validar transición simple: PENDIENTE -> EN_PREPARACION -> LISTO
         ItemEstado actual = it.getEstadoPreparacion();
-        boolean ok =
-                (actual == ItemEstado.PENDIENTE && (nuevo == ItemEstado.EN_PREPARACION || nuevo == ItemEstado.PENDIENTE)) ||
-                        (actual == ItemEstado.EN_PREPARACION && (nuevo == ItemEstado.LISTO || nuevo == ItemEstado.EN_PREPARACION)) ||
+        boolean ok = (actual == ItemEstado.PENDIENTE
+                && (nuevo == ItemEstado.EN_PREPARACION || nuevo == ItemEstado.PENDIENTE)) ||
+                (actual == ItemEstado.EN_PREPARACION
+                        && (nuevo == ItemEstado.LISTO || nuevo == ItemEstado.EN_PREPARACION))
+                ||
                         (actual == ItemEstado.LISTO && nuevo == ItemEstado.LISTO);
-        if (!ok) throw new IllegalStateException("Transición de estado no permitida");
+        if (!ok)
+            throw new IllegalStateException("Transición de estado no permitida");
 
         it.setEstadoPreparacion(nuevo);
 
         // Actualizar estado del pedido si corresponde
         if (p.getEstado() == PedidoEstado.EN_PREPARACION) {
             boolean todosListos = p.getItems().stream().allMatch(x -> x.getEstadoPreparacion() == ItemEstado.LISTO);
-            if (todosListos) p.setEstado(PedidoEstado.LISTO);
+            if (todosListos)
+                p.setEstado(PedidoEstado.LISTO);
         }
     }
 

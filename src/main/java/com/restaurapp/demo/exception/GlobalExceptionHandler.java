@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     // Para violaciones de constraints de la BD (ej. email duplicado, item en uso)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        String message = "Conflicto de datos. Es posible que el recurso ya exista o esté en uso.";
+        String message = "Conflicto de datos. Es posible que el recurso ya exista o este en uso.";
         if (ex.getMessage() != null && ex.getMessage().contains("ya existe")) {
             message = ex.getMessage();
         }
@@ -46,14 +46,14 @@ public class GlobalExceptionHandler {
             InternalAuthenticationServiceException.class
     })
     public ResponseEntity<Map<String, Object>> handleAuthErrors(Exception ex) {
-        Map<String, Object> body = Map.of("success", false, "message", "Credenciales inválidas");
+        Map<String, Object> body = Map.of("success", false, "message", "Credenciales invalidas");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
     // Un "catch-all" para cualquier otro error inesperado
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
-        Map<String, Object> body = Map.of("success", false, "message", "Ocurrió un error interno en el servidor.");
+        Map<String, Object> body = Map.of("success", false, "message", "Ocurrio un error interno en el servidor.");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500 Internal Server Error
     }
 }

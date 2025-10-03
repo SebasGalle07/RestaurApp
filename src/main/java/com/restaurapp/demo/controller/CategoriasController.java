@@ -29,7 +29,7 @@ public class CategoriasController {
     @PreAuthorize("hasRole('ADMIN')")
     public Map<String, Object> crear(@Valid @RequestBody CategoriaCreateDto body) {
         Long id = service.crear(body);
-        return Map.of("success", true, "data", Map.of("id", id), "message", "Categoría creada.");
+        return Map.of("success", true, "data", Map.of("id", id), "message", "Categoria creada.");
     }
 
     // GET /categorias/{id}
@@ -44,7 +44,7 @@ public class CategoriasController {
     @PreAuthorize("hasRole('ADMIN')")
     public Map<String, Object> actualizar(@PathVariable Long id, @Valid @RequestBody CategoriaUpdateDto body) {
         service.actualizar(id, body);
-        return Map.of("success", true, "message", "Categoría actualizada.");
+        return Map.of("success", true, "message", "Categoria actualizada.");
     }
 
     // DELETE /categorias/{id}
@@ -52,6 +52,6 @@ public class CategoriasController {
     @PreAuthorize("hasRole('ADMIN')")
     public Map<String, Object> eliminar(@PathVariable Long id) {
         service.eliminar(id);
-        return Map.of("success", true, "message", "Categoría eliminada.");
+        return Map.of("success", true, "message", "Categoria eliminada.");
     }
 }

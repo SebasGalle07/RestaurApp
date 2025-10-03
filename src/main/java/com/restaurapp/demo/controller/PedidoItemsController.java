@@ -63,6 +63,6 @@ public class PedidoItemsController {
     public Map<String, Object> actualizarEstado(@PathVariable Long pedidoId, @PathVariable Long detalleId,
                                                 @Valid @RequestBody ItemEstadoPatchDto body) {
         service.actualizarEstado(pedidoId, detalleId, body);
-        return Map.of("success", true, "message", "Estado de preparación actualizado.");
+        return Map.of("success", true, "message", "Estado de preparacion actualizado.");
     }
 }

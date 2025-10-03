@@ -49,7 +49,7 @@ public class PagoServiceImpl implements PagoService {
         // Validar método
         PagoMetodo metodo;
         try { metodo = PagoMetodo.valueOf(dto.metodo().toUpperCase()); }
-        catch (IllegalArgumentException ex) { throw new IllegalArgumentException("Método de pago inválido"); }
+        catch (IllegalArgumentException ex) { throw new IllegalArgumentException("Metodo de pago invalido"); }
 
         // Validar que no exceda saldo
         BigDecimal saldo = calcularSaldoPendiente(pedidoId);

@@ -37,6 +37,6 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Map<String, Object>> logout() {
         // En JWT stateless no hay invalidación de servidor (a menos que uses blacklist/Redis)
-        return ResponseEntity.ok(Map.of("success", true, "message", "Sesión cerrada."));
+        return ResponseEntity.ok(Map.of("success", true, "message", "Sesion cerrada."));
     }
 }
