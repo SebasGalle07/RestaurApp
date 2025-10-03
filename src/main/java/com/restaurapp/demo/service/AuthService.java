@@ -34,9 +34,9 @@ public class AuthService {
 
         // Solo usuarios activos
         User u = userRepository.findByEmailAndActivoTrue(req.getEmail())
-                .orElseThrow(); // si llegaste aquí y no existe/activo, algo raro pasó
+                .orElseThrow(); // si llegaste aqui y no existe/activo, algo raro paso
 
-        // Claim "rol" en minúsculas (alineado a la doc)
+        // Claim "rol" en minusculas (alineado a la doc)
         String access = jwtService.generateAccessToken(
                 u.getEmail(),
                 Map.of("rol", u.getRol().getValue())

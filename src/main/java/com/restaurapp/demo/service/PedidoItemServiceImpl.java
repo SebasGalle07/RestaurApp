@@ -48,7 +48,7 @@ public class PedidoItemServiceImpl implements PedidoItemService {
             throw new IllegalStateException("Pedido no editable en estado " + p.getEstado());
         }
         var menu = menuRepo.findById(dto.item_menu_id())
-                .orElseThrow(() -> new IllegalArgumentException("Ítem de menú no encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Item de menu no encontrado"));
 
         var it = new PedidoItem();
         it.setPedido(p);
@@ -119,19 +119,18 @@ public class PedidoItemServiceImpl implements PedidoItemService {
         try {
             nuevo = ItemEstado.valueOf(dto.estado_preparacion().toUpperCase());
         } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException("Estado inválido");
+            throw new IllegalArgumentException("Estado invalido");
         }
 
-        // Validar transición simple: PENDIENTE -> EN_PREPARACION -> LISTO
+        // Validar transicion simple: PENDIENTE -> EN_PREPARACION -> LISTO
         ItemEstado actual = it.getEstadoPreparacion();
         boolean ok = (actual == ItemEstado.PENDIENTE
-                && (nuevo == ItemEstado.EN_PREPARACION || nuevo == ItemEstado.PENDIENTE)) ||
-                (actual == ItemEstado.EN_PREPARACION
-                        && (nuevo == ItemEstado.LISTO || nuevo == ItemEstado.EN_PREPARACION))
-                ||
-                        (actual == ItemEstado.LISTO && nuevo == ItemEstado.LISTO);
+                && (nuevo == ItemEstado.EN_PREPARACION || nuevo == ItemEstado.PENDIENTE))
+                || (actual == ItemEstado.EN_PREPARACION
+                && (nuevo == ItemEstado.LISTO || nuevo == ItemEstado.EN_PREPARACION))
+                || (actual == ItemEstado.LISTO && nuevo == ItemEstado.LISTO);
         if (!ok)
-            throw new IllegalStateException("Transición de estado no permitida");
+            throw new IllegalStateException("Transicion de estado no permitida");
 
         it.setEstadoPreparacion(nuevo);
 

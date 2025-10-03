@@ -91,7 +91,7 @@ public class FacturaServiceImpl implements FacturaService {
     @Override
     @Transactional(readOnly = true)
     public Page<FacturaListDto> listar(Long mesaId,
-                                       UUID meseroId,     // ← UUID para coincidir con repo & dominio
+                                       UUID meseroId,     // UUID para coincidir con repo y dominio
                                        LocalDateTime desde,
                                        LocalDateTime hasta,
                                        int page,

@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UpdateUserDto {
 
-    // Todos opcionales: sólo se actualiza lo que venga no-null
+    // Todos opcionales: solo se actualiza lo que venga no-null
 
     private String nombre;
 

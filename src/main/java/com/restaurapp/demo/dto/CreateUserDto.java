@@ -24,6 +24,6 @@ public class CreateUserDto {
     @NotNull
     private Role rol;     // Role.ADMIN | MESERO | COCINERO | CAJERO
 
-    // Opcional en creación. Si viene null, el servicio lo pone true.
+    // Opcional en creacion. Si viene null, el servicio lo pone true.
     private Boolean activo;
 }

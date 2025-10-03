@@ -86,6 +86,6 @@ public class MenuServiceImpl implements MenuService {
     public void eliminar(Long id) {
         MenuItem e = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Item no encontrado"));
         repo.delete(e);
-        // Si hay FK desde pedido_items(item_menu_id), la BD impedirá borrar → captúralo con tu @ControllerAdvice como 409.
+        // Si hay FK desde pedido_items(item_menu_id), la BD impedira borrar -> capturalo con tu @ControllerAdvice como 409.
     }
 }

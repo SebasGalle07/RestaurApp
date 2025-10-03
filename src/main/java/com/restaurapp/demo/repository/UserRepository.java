@@ -14,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
 
-    // Para login solo usuarios activos (opcional pero útil)
+    // Para login solo usuarios activos (opcional pero util)
     Optional<User> findByEmailAndActivoTrue(String email);
 
     // Soporte a filtros del endpoint /users

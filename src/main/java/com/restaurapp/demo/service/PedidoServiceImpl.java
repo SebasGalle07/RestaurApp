@@ -58,7 +58,7 @@ public class PedidoServiceImpl implements PedidoService {
         // agregar items
         for (PedidoItemNewDto it : dto.items()) {
             var menu = menuRepo.findById(it.item_menu_id())
-                    .orElseThrow(() -> new IllegalArgumentException("Ítem de menú no encontrado"));
+                    .orElseThrow(() -> new IllegalArgumentException("Item de menu no encontrado"));
             var item = new PedidoItem();
             item.setPedido(p);
             item.setItemMenu(menu);
@@ -116,7 +116,7 @@ public class PedidoServiceImpl implements PedidoService {
 
         // Regla 1: No se puede cancelar un pedido ya cerrado o cancelado.
         if (p.getEstado() == PedidoEstado.CERRADO || p.getEstado() == PedidoEstado.CANCELADO) {
-            throw new IllegalStateException("El pedido ya está finalizado y no se puede cancelar.");
+            throw new IllegalStateException("El pedido ya esta finalizado y no se puede cancelar.");
         }
 
         // Regla 2: No se puede cancelar si ya tiene pagos aplicados.
@@ -148,13 +148,13 @@ public class PedidoServiceImpl implements PedidoService {
 
     private PedidoDto toDto(Pedido p) {
         var items = p.getItems().stream().map(it -> new PedidoItemDto(
-                        it.getId(),
-                        it.getItemMenu().getId(),
-                        it.getItemMenu().getNombre(),
-                        it.getCantidad(),
-                        it.getPrecioUnitario(),
-                        it.getSubtotal(),
-                        it.getEstadoPreparacion().name(),
+                it.getId(),
+                it.getItemMenu().getId(),
+                it.getItemMenu().getNombre(),
+                it.getCantidad(),
+                it.getPrecioUnitario(),
+                it.getSubtotal(),
+                it.getEstadoPreparacion().name(),
                 it.getNotas())).toList();
 
         return new PedidoDto(

@@ -14,7 +14,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Para errores de validación de datos (ej. ID no encontrado, estado inválido)
+    // Para errores de validacion de datos (ej. ID no encontrado, estado invalido)
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
         Map<String, Object> body = Map.of("success", false, "message", ex.getMessage());
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body); // 409 Conflict
     }
 
-    // Para errores de autenticación → 401 Unauthorized
+    // Para errores de autenticacion -> 401 Unauthorized
     @ExceptionHandler({
             BadCredentialsException.class,
             UsernameNotFoundException.class,

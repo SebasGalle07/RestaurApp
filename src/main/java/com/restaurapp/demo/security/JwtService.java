@@ -22,13 +22,13 @@ public class JwtService {
     private final long allowedClockSkewSec = 30; // tolerancia por desfases de reloj
 
     /**
-     * Si tu secret está en Base64, pon app.jwt.base64=true.
+     * Si tu secret esta en Base64, pon app.jwt.base64=true.
      */
     public JwtService(
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.base64:false}") boolean secretBase64,
             @Value("${app.jwt.access-ttl-sec:3600}") int accessTtlSec,
-            @Value("${app.jwt.refresh-ttl-sec:1209600}") int refreshTtlSec // 14 días por defecto
+            @Value("${app.jwt.refresh-ttl-sec:1209600}") int refreshTtlSec // 14 dias por defecto
     ) {
         this.key = buildSigningKey(secret, secretBase64);
         this.accessTtlSec = accessTtlSec;
@@ -79,7 +79,7 @@ public class JwtService {
                 .parseClaimsJws(token);
     }
 
-    // ------- Helpers útiles --------
+    // ------- Helpers utiles --------
     public String getSubject(String token) {
         return getClaim(token, Claims::getSubject);
     }

@@ -15,6 +15,6 @@ public class RoleAttributeConverter implements AttributeConverter<Role, String> 
     @Override
     public Role convertToEntityAttribute(String dbData) {
         if (dbData == null) return null;
-        return Role.fromValue(dbData); // usa el método correcto del enum
+        return Role.fromValue(dbData); // usa el metodo correcto del enum
     }
 }

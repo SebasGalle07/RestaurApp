@@ -46,7 +46,7 @@ public class PagoServiceImpl implements PagoService {
             throw new IllegalStateException("No se pueden registrar pagos para un pedido " + pedido.getEstado());
         }
 
-        // Validar método
+        // Validar metodo
         PagoMetodo metodo;
         try { metodo = PagoMetodo.valueOf(dto.metodo().toUpperCase()); }
         catch (IllegalArgumentException ex) { throw new IllegalArgumentException("Metodo de pago invalido"); }

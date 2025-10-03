@@ -23,7 +23,7 @@ public class DbUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 u.getEmail(),
                 u.getPasswordHash(),   // usa la columna password_hash
-                u.isActivo(),          // habilitado solo si está activo
+                u.isActivo(),          // habilitado solo si esta activo
                 true,                  // accountNonExpired
                 true,                  // credentialsNonExpired
                 true,                  // accountNonLocked

@@ -61,6 +61,6 @@ public class CategoriaServiceImpl implements CategoriaService {
     public void eliminar(Long id) {
         var c = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Categoria no encontrada"));
         repo.delete(c);
-        // Si tu BD tiene FK desde menu(categoria_id), la eliminación fallará con DataIntegrityViolationException → 409 si tienes un ControllerAdvice.
+        // Si tu BD tiene FK desde menu(categoria_id), la eliminacion fallara con DataIntegrityViolationException -> 409 si tienes un ControllerAdvice.
     }
 }

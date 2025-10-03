@@ -10,6 +10,6 @@ public interface PagoService {
     Long crear(Long pedidoId, PagoCreateDto dto);
     void anular(Long pedidoId, Long pagoId);
 
-    // Utilitario para otros módulos (opcional)
+    // Utilitario para otros modulos (opcional)
     BigDecimal calcularSaldoPendiente(Long pedidoId);
 }

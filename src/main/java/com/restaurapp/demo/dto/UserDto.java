@@ -11,7 +11,7 @@ public class UserDto {
     private UUID id;
     private String email;
     private String nombre;
-    private String rol;          // en minúsculas: "admin", "mesero", etc.
+    private String rol;          // en minusculas: "admin", "mesero", etc.
     private Boolean activo;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

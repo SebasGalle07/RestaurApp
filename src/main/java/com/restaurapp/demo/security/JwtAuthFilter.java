@@ -31,13 +31,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // 1) Opcional: permitir preflight CORS sin autenticación
+        // 1) Opcional: permitir preflight CORS sin autenticacion
         if (HttpMethod.OPTIONS.matches(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 2) Rutas públicas (deben coincidir con lo permitido en SecurityConfig)
+        // 2) Rutas publicas (deben coincidir con lo permitido en SecurityConfig)
         String path = request.getRequestURI();
         if (path.startsWith("/auth/") || "/actuator/health".equals(path)) {
             filterChain.doFilter(request, response);
@@ -82,10 +82,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
         } catch (ExpiredJwtException e) {
-            // Token expirado: dejamos seguir sin autenticación; el controller devolverá 401 si la ruta lo exige
+            // Token expirado: dejamos seguir sin autenticacion; el controller devolvera 401 si la ruta lo exige
             // (Opcional) request.setAttribute("jwt_error", "expired");
         } catch (JwtException | IllegalArgumentException e) {
-            // Token inválido o mal formado
+            // Token invalido o mal formado
             // (Opcional) request.setAttribute("jwt_error", "invalid");
         }
 

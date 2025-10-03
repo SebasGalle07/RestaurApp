@@ -72,7 +72,7 @@ public class UserService {
 
         User saved = repo.saveAndFlush(u);
 
-        // Si 'codigo' lo asigna la BD vía DEFAULT y en la entidad está insertable=false/updatable=false,
+        // Si 'codigo' lo asigna la BD via DEFAULT y en la entidad esta insertable=false/updatable=false,
         // refrescar para obtenerlo en el objeto devuelto:
         try {
             em.refresh(saved);
@@ -115,7 +115,7 @@ public class UserService {
 
     @Transactional
     public void delete(UUID id) {
-        // Borrado lógico (como tenías)
+        // Borrado logico (como tenias)
         User u = get(id);
         u.setActivo(false);
         repo.save(u);

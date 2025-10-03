@@ -40,10 +40,10 @@ public class UserController {
         );
     }
 
-    // NUEVO: Detalle por código numérico (más amigable)
+    // NUEVO: Detalle por codigo numerico (mas amigable)
     @GetMapping("/codigo/{codigo}")
     public ResponseEntity<Map<String, Object>> detailByCodigo(@PathVariable Long codigo) {
-        var user = service.getByCodigo(codigo); // método simple en service que delega a repo.findByCodigo(...)
+        var user = service.getByCodigo(codigo); // metodo simple en service que delega a repo.findByCodigo(...)
         return ResponseEntity.ok(
                 Map.of("success", true, "data", mapper.toDto(user))
         );
@@ -55,7 +55,7 @@ public class UserController {
         var body = Map.of(
                 "success", true,
                 "message", "Usuario creado.",
-                // devolvemos también el código numérico para que el front lo pueda usar
+                // devolvemos tambien el codigo numerico para que el front lo pueda usar
                 "data", Map.of("id", created.getId(), "codigo", created.getCodigo())
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(body);

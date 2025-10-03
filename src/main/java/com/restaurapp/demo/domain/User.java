@@ -25,7 +25,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    // Guardar siempre el hash de la contraseña
+    // Guardar siempre el hash de la contrasena
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 

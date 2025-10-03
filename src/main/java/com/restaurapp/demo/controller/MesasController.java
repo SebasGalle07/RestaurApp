@@ -14,7 +14,7 @@ import java.util.*;
 public class MesasController {
     private final MesaService mesaService;
 
-    // GET /mesas→ { "success": true, "data": [...] }
+    // GET /mesas -> { "success": true, "data": [...] }
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','MESERO','COCINERO','CAJERO')")
     public Map<String, Object> listar() {
