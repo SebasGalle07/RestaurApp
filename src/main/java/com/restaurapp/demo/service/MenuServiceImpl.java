@@ -34,6 +34,7 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<MenuDto> listar(Long categoriaId, Boolean activo, String q, int page, int size, String sort) {
         // sort esperado: "campo,asc|desc" (p.ej. "id,asc")
         String[] s = (sort == null || sort.isBlank()) ? new String[]{"id","asc"} : sort.split(",");
@@ -61,6 +62,7 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MenuDto detalle(Long id) {
         MenuItem e = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Item no encontrado"));
         return toDto(e);
