@@ -33,6 +33,7 @@ public class PedidoServiceImpl implements PedidoService {
     private final PagoService pagoService;
 
     @Override
+    @Transactional(readOnly = true)
     public Page<PedidoListDto> listar(Long mesaId, PedidoEstado estado, LocalDateTime desde, LocalDateTime hasta,
                                       int page, int size, String sort) {
         String[] s = (sort == null || sort.isBlank()) ? new String[] { "id", "desc" } : sort.split(",");
@@ -75,6 +76,7 @@ public class PedidoServiceImpl implements PedidoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PedidoDto detalle(Long id) {
         var p = pedidoRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado"));
         return toDto(p);

@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:restaurapp-test;MODE=PostgreSQL;DATABASE_TO_UPPER=false;DEFAULT_NULL_ORDERING=HIGH
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  sql:
+    init:
+      mode: never
+
+app:
+  jwt:
+    secret: "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz"
+    access-ttl-sec: 3600
+    refresh-ttl-sec: 1209600
+  cors:
+    allowed-origins: http://localhost:4200

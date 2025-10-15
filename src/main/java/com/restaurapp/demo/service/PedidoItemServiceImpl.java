@@ -35,6 +35,7 @@ public class PedidoItemServiceImpl implements PedidoItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PedidoItemDto> listar(Long pedidoId) {
         var list = itemRepo.findByPedidoId(pedidoId);
         return list.stream().map(this::toDto).toList();
@@ -66,6 +67,7 @@ public class PedidoItemServiceImpl implements PedidoItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PedidoItemDto detalle(Long pedidoId, Long detalleId) {
         var it = itemRepo.findById(detalleId).orElseThrow(() -> new IllegalArgumentException("Detalle no encontrado"));
         if (!it.getPedido().getId().equals(pedidoId))
