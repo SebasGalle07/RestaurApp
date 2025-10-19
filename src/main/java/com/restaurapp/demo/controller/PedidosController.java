@@ -11,7 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @RestController
@@ -37,11 +39,28 @@ public class PedidosController {
         if (estadoStr != null && !estadoStr.isBlank()) {
             estado = PedidoEstado.valueOf(estadoStr.toUpperCase());
         }
-        LocalDateTime dDesde = (desde == null || desde.isBlank()) ? null : LocalDateTime.parse(desde);
-        LocalDateTime dHasta = (hasta == null || hasta.isBlank()) ? null : LocalDateTime.parse(hasta);
+        LocalDateTime dDesde = parseDateOrDateTime(desde, true);
+        LocalDateTime dHasta = parseDateOrDateTime(hasta, false);
 
         Page<PedidoListDto> result = service.listar(mesaId, estado, dDesde, dHasta, page, size, sort);
         return Map.of("success", true, "data", result.getContent());
+    }
+
+    private LocalDateTime parseDateOrDateTime(String value, boolean startOfDay) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        String trimmed = value.trim();
+        try {
+            LocalDate date = LocalDate.parse(trimmed);
+            return startOfDay ? date.atStartOfDay() : date.atTime(23, 59, 59);
+        } catch (DateTimeParseException ignored) {
+            try {
+                return LocalDateTime.parse(trimmed);
+            } catch (DateTimeParseException ex) {
+                throw new IllegalArgumentException("Formato de fecha inválido: " + value);
+            }
+        }
     }
 
     // POST /pedidos

@@ -7,9 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
-import java.util.UUID; // <-- CORRECCION: importar UUID
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,8 +39,8 @@ public class FacturasController {
             @RequestParam(defaultValue = "50") int size,
             @RequestParam(defaultValue = "fechaEmision,desc") String sort
     ) {
-        var dDesde = (desde == null || desde.isBlank()) ? null : LocalDateTime.parse(desde);
-        var dHasta = (hasta == null || hasta.isBlank()) ? null : LocalDateTime.parse(hasta);
+        var dDesde = parseDateOrDateTime(desde, true);
+        var dHasta = parseDateOrDateTime(hasta, false);
         Page<FacturaListDto> result = service.listar(mesaId, meseroId, dDesde, dHasta, page, size, sort);
         return Map.of("success", true, "data", result.getContent());
     }
@@ -48,5 +50,21 @@ public class FacturasController {
     @PreAuthorize("hasAnyRole('ADMIN','CAJERO')")
     public Map<String, Object> detalle(@PathVariable Long id) {
         return Map.of("success", true, "data", service.detalle(id));
+    }
+
+    private LocalDateTime parseDateOrDateTime(String value, boolean startOfDay) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            LocalDate date = LocalDate.parse(value.trim());
+            return startOfDay ? date.atStartOfDay() : date.atTime(23, 59, 59);
+        } catch (DateTimeParseException ignored) {
+            try {
+                return LocalDateTime.parse(value.trim());
+            } catch (DateTimeParseException ex) {
+                throw new IllegalArgumentException("Formato de fecha inválido: " + value);
+            }
+        }
     }
 }
