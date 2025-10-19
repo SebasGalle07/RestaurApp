@@ -5,7 +5,7 @@ services:
     env: docker
     dockerfilePath: ./Dockerfile
     autoDeploy: true
-    healthCheckPath: /actuator/health
+    healthCheckPath: /api/actuator/health
     envVars:
       - key: SPRING_DATASOURCE_URL
         sync: false

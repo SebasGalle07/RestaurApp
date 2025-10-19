@@ -31,7 +31,7 @@ Opcionales:
 2. Render detectara `render.yaml` y mostrara el servicio `restaurapp-backend`:
    - Tipo: `Web Service`
    - Entorno: `Docker` (usa el `Dockerfile` incluido)
-   - Healtcheck: `/actuator/health`
+   - Healthcheck: `/api/actuator/health`
 3. Define las variables de entorno requeridas cuando te las pida Render:
    - `SPRING_DATASOURCE_URL`
    - `SPRING_DATASOURCE_USERNAME`
