@@ -25,10 +25,10 @@ spring:
       write-dates-as-timestamps: false
 
 server:
+  address: 0.0.0.0
+  port: ${PORT:${SERVER_PORT:8080}}
   error:
     include-message: always
-
-  port: ${SERVER_PORT:${PORT:8080}}
 
 app:
   jwt:
