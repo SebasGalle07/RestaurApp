@@ -4,9 +4,9 @@
 
 Configura estas variables antes de ejecutar o desplegar:
 
-- `SPRING_DATASOURCE_URL` (default: `jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&preferQueryMode=simple`)
-- `SPRING_DATASOURCE_USERNAME` (default: `postgres.qxlnxqzfnkrxxxakyvdt`)
-- `SPRING_DATASOURCE_PASSWORD` (default: `SebasyLisa0809`)
+- `SPRING_DATASOURCE_URL` (por ejemplo, `jdbc:postgresql://<host>:<puerto>/<db>?sslmode=require`)
+- `SPRING_DATASOURCE_USERNAME`
+- `SPRING_DATASOURCE_PASSWORD`
 - `APP_JWT_SECRET` (genera una cadena aleatoria segura)
 - `APP_CORS_ALLOWED_ORIGINS` (lista separada por comas con los origenes permitidos)
 
@@ -31,7 +31,7 @@ Opcionales:
 2. Render detectara `render.yaml` y mostrara el servicio `restaurapp-backend`:
    - Tipo: `Web Service`
    - Entorno: `Docker` (usa el `Dockerfile` incluido)
-   - Healthcheck: `/api/actuator/health`
+   - Healthcheck: `/actuator/health`
 3. Define las variables de entorno requeridas cuando te las pida Render:
    - `SPRING_DATASOURCE_URL`
    - `SPRING_DATASOURCE_USERNAME`
@@ -51,10 +51,10 @@ Opcionales:
    ```
 4. Carga variables:
    ```bash
-   eb setenv SPRING_DATASOURCE_URL="jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&preferQueryMode=simple" ^
-            SPRING_DATASOURCE_USERNAME="postgres.qxlnxqzfnkrxxxakyvdt" ^
-            SPRING_DATASOURCE_PASSWORD="SebasyLisa0809" ^
-            APP_JWT_SECRET="coloca_un_secreto_fuerte" ^
+   eb setenv SPRING_DATASOURCE_URL="jdbc:postgresql://<host>:<puerto>/<db>?sslmode=require" ^
+            SPRING_DATASOURCE_USERNAME="<usuario>" ^
+            SPRING_DATASOURCE_PASSWORD="<clave>" ^
+            APP_JWT_SECRET="<secreto_fuerte>" ^
             APP_CORS_ALLOWED_ORIGINS="http://localhost:4200"
    ```
    (en bash usa `\` como continuacion de linea).

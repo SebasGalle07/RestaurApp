@@ -1,7 +1,7 @@
 FROM gradle:8.7-jdk21 AS build
 WORKDIR /workspace
 COPY . .
-RUN chmod +x gradlew && ./gradlew clean bootJar
+RUN chmod +x gradlew && ./gradlew clean bootJar --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app

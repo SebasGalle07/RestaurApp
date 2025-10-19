@@ -4,14 +4,16 @@ spring:
       path: /api
 
   datasource:
-    url: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&preferQueryMode=simple
-    username: postgres.qxlnxqzfnkrxxxakyvdt
-    password: SebasyLisa0809
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: ${SPRING_DATASOURCE_MAX_POOL_SIZE:5}
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
     open-in-view: false
     properties:
       hibernate:
@@ -26,13 +28,15 @@ server:
   error:
     include-message: always
 
+  port: ${SERVER_PORT:${PORT:8080}}
+
 app:
   jwt:
-    secret: "change-this-secret-to-a-very-long-random-value-32b-min"
-    access-ttl-sec: 10400
-    refresh-ttl-sec: 1209600
+    secret: ${APP_JWT_SECRET}
+    access-ttl-sec: ${APP_JWT_ACCESS_TTL_SEC:10400}
+    refresh-ttl-sec: ${APP_JWT_REFRESH_TTL_SEC:1209600}
   cors:
-    allowed-origins: http://localhost:4200
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:4200}
 
 management:
   endpoints:
