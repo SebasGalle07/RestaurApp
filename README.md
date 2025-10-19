@@ -27,20 +27,19 @@ Opcionales:
 
 ## Despliegue en Render (free tier recomendado)
 
-1. Crea un Web Service en https://dashboard.render.com con plan `Free`.
-2. Conecta el repositorio o pega la URL del repo usando la opcion **Public Git repository**.
-3. Configura:
-   - Runtime: `Native` (Java)
-   - Build command: `./gradlew clean bootJar`
-   - Start command: `java -jar build/libs/restaurapp.jar`
-4. En **Environment** agrega:
+1. Desde https://dashboard.render.com crea un **Blueprint** nuevo y selecciona este repositorio (plan `Free`).
+2. Render detectara `render.yaml` y mostrara el servicio `restaurapp-backend`:
+   - Tipo: `Web Service`
+   - Entorno: `Docker` (usa el `Dockerfile` incluido)
+   - Healtcheck: `/actuator/health`
+3. Define las variables de entorno requeridas cuando te las pida Render:
    - `SPRING_DATASOURCE_URL`
    - `SPRING_DATASOURCE_USERNAME`
    - `SPRING_DATASOURCE_PASSWORD`
    - `APP_JWT_SECRET`
-   - `APP_CORS_ALLOWED_ORIGINS` (incluye el dominio del frontend cuando exista)
-5. Render expone la variable `PORT` y la aplicacion ya la respeta (`server.port=${PORT:8080}`).
-6. Guarda y despliega. El servicio permanece gratuito; puede entrar en modo suspendido sin trafico y reactivarse al recibir una nueva peticion.
+   - `APP_CORS_ALLOWED_ORIGINS`
+4. Haz clic en **Apply** para lanzar el despliegue. El build ejecuta Gradle dentro del contenedor y publica `restaurapp.jar`.
+5. Una vez en estado *Live*, prueba `https://<tu-subdominio>.onrender.com/actuator/health` y los endpoints `/api/...`. Si el servicio entra en reposo por inactividad, la primera peticion puede tardar ~1 minuto en reactivarlo.
 
 ## Despliegue en Elastic Beanstalk (opcional)
 

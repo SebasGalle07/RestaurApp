@@ -2,9 +2,10 @@ services:
   - type: web
     name: restaurapp-backend
     plan: free
-    runtime: java
-    buildCommand: ./gradlew clean bootJar
-    startCommand: java -jar build/libs/restaurapp.jar
+    env: docker
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    healthCheckPath: /actuator/health
     envVars:
       - key: SPRING_DATASOURCE_URL
         sync: false
