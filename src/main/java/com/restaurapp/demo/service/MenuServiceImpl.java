@@ -62,7 +62,8 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public MenuDto detalle(Long id) {
-        MenuItem e = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Item no encontrado"));
+        MenuItem e = repo.findByIdWithCategoria(id)
+                .orElseThrow(() -> new IllegalArgumentException("Item no encontrado"));
         return toDto(e);
     }
 
