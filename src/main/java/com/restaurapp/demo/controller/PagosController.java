@@ -29,8 +29,14 @@ public class PagosController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','CAJERO')")
     public Map<String, Object> crear(@PathVariable Long pedidoId, @Valid @RequestBody PagoCreateDto body) {
-        Long id = service.crear(pedidoId, body);
-        return Map.of("success", true, "data", Map.of("id", id), "message", "Pago registrado.");
+        var result = service.crear(pedidoId, body);
+        return Map.of(
+                "success", true,
+                "data", Map.of("id", result.id(), "cambio", result.cambio()),
+                "message", result.cambio().compareTo(java.math.BigDecimal.ZERO) > 0
+                        ? "Pago registrado. Cambio: " + result.cambio()
+                        : "Pago registrado."
+        );
     }
 
     // DELETE /pedidos/{pedidoId}/pagos/{pagoId}  (anular)

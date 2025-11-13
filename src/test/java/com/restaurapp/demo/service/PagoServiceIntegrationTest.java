@@ -30,18 +30,18 @@ class PagoServiceIntegrationTest {
 
     @Test
     void crearPagoReduceSaldoPendiente() {
-        var pagoId = pagoService.crear(7L, new PagoCreateDto(new BigDecimal("10000"), "EFECTIVO"));
-        assertThat(pagoId).isNotNull();
+        var result = pagoService.crear(7L, new PagoCreateDto(new BigDecimal("10000"), "EFECTIVO"));
+        assertThat(result.id()).isNotNull();
+        assertThat(result.cambio()).isEqualByComparingTo("0");
 
         var saldo = pagoService.calcularSaldoPendiente(7L);
         assertThat(saldo).isEqualByComparingTo("10000");
     }
 
     @Test
-    void crearPagoMayorAlSaldoLanzaExcepcion() {
+    void crearPagoMayorAlSaldoDevuelveCambioEnEfectivo() {
         var dto = new PagoCreateDto(new BigDecimal("50000"), "EFECTIVO");
-        assertThatThrownBy(() -> pagoService.crear(7L, dto))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("excede el saldo");
+        var result = pagoService.crear(7L, dto);
+        assertThat(result.cambio()).isGreaterThan(BigDecimal.ZERO);
     }
 }

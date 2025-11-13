@@ -47,11 +47,11 @@ class PagoServiceImplTest {
     }
 
     @Test
-    void crearLanzaSiMontoExcedeSaldo() {
+    void crearLanzaSiMontoExcedeSaldoConMetodoNoEfectivo() {
         when(pedidoRepository.findById(7L)).thenReturn(Optional.of(pedido), Optional.of(pedido));
         when(pagoRepository.sumByPedidoAndEstado(7L, PagoEstado.APLICADO)).thenReturn(BigDecimal.ZERO);
 
-        PagoCreateDto dto = new PagoCreateDto(new BigDecimal("150.00"), "efectivo");
+        PagoCreateDto dto = new PagoCreateDto(new BigDecimal("150.00"), "tarjeta");
 
         assertThatThrownBy(() -> service.crear(7L, dto))
                 .isInstanceOf(IllegalStateException.class)
@@ -72,10 +72,29 @@ class PagoServiceImplTest {
 
         PagoCreateDto dto = new PagoCreateDto(new BigDecimal("50.00"), "tarjeta");
 
-        Long pagoId = service.crear(7L, dto);
+        var result = service.crear(7L, dto);
 
         verify(pagoRepository).save(any(Pago.class));
         verify(pagoRepository).sumByPedidoAndEstado(7L, PagoEstado.APLICADO);
-        assertThat(pagoId).isEqualTo(55L);
+        assertThat(result.id()).isEqualTo(55L);
+        assertThat(result.cambio()).isEqualByComparingTo("0");
+    }
+
+    @Test
+    void crearConEfectivoCalculaCambio() {
+        when(pedidoRepository.findById(7L)).thenReturn(Optional.of(pedido), Optional.of(pedido));
+        when(pagoRepository.sumByPedidoAndEstado(7L, PagoEstado.APLICADO)).thenReturn(new BigDecimal("20.00"));
+        when(pagoRepository.save(any(Pago.class))).thenAnswer(invocation -> {
+            Pago saved = invocation.getArgument(0);
+            saved.setId(77L);
+            return saved;
+        });
+
+        PagoCreateDto dto = new PagoCreateDto(new BigDecimal("150.00"), "efectivo");
+
+        var result = service.crear(7L, dto);
+
+        assertThat(result.id()).isEqualTo(77L);
+        assertThat(result.cambio()).isEqualByComparingTo("50.00");
     }
 }

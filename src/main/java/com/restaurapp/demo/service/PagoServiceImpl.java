@@ -3,6 +3,7 @@ package com.restaurapp.demo.service;
 import com.restaurapp.demo.domain.*;
 import com.restaurapp.demo.dto.PagoCreateDto;
 import com.restaurapp.demo.dto.PagoDto;
+import com.restaurapp.demo.dto.PagoResultDto;
 import com.restaurapp.demo.dto.PagosResponseDto;
 import com.restaurapp.demo.repository.PagoRepository;
 import com.restaurapp.demo.repository.PedidoRepository;
@@ -39,7 +40,7 @@ public class PagoServiceImpl implements PagoService {
 
     @Override
     @Transactional
-    public Long crear(Long pedidoId, PagoCreateDto dto) {
+    public PagoResultDto crear(Long pedidoId, PagoCreateDto dto) {
         var pedido = pedidoRepo.findById(pedidoId)
                 .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado"));
         if (pedido.getEstado() == PedidoEstado.CANCELADO || pedido.getEstado() == PedidoEstado.CERRADO) {
@@ -51,21 +52,35 @@ public class PagoServiceImpl implements PagoService {
         try { metodo = PagoMetodo.valueOf(dto.metodo().toUpperCase()); }
         catch (IllegalArgumentException ex) { throw new IllegalArgumentException("Metodo de pago invalido"); }
 
-        // Validar que no exceda saldo
+        // Validar montos y calcular cambio si es efectivo
         BigDecimal saldo = calcularSaldoPendiente(pedidoId);
-        if (dto.monto().compareTo(saldo) > 0) {
+        if (saldo.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalStateException("El pedido no tiene saldo pendiente.");
+        }
+
+        BigDecimal montoIngresado = dto.monto();
+        if (montoIngresado == null || montoIngresado.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("El monto debe ser mayor a cero.");
+        }
+
+        BigDecimal cambio = BigDecimal.ZERO;
+        BigDecimal montoAplicado = montoIngresado;
+        if (metodo == PagoMetodo.EFECTIVO && montoIngresado.compareTo(saldo) > 0) {
+            cambio = montoIngresado.subtract(saldo);
+            montoAplicado = saldo;
+        } else if (montoIngresado.compareTo(saldo) > 0) {
             throw new IllegalStateException("Monto excede el saldo pendiente (" + saldo + ")");
         }
 
         var pago = Pago.builder()
                 .pedido(pedido)
-                .monto(dto.monto())
+                .monto(montoAplicado)
                 .metodo(metodo)
                 .estado(PagoEstado.APLICADO)
                 .build();
 
         pagoRepo.save(pago);
-        return pago.getId();
+        return new PagoResultDto(pago.getId(), cambio);
     }
 
     @Override
