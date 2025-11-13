@@ -1,8 +1,10 @@
 package com.restaurapp.demo.exception;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,10 +45,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             BadCredentialsException.class,
             UsernameNotFoundException.class,
-            InternalAuthenticationServiceException.class
+            InternalAuthenticationServiceException.class,
+            AccountStatusException.class
     })
     public ResponseEntity<Map<String, Object>> handleAuthErrors(Exception ex) {
         Map<String, Object> body = Map.of("success", false, "message", "Credenciales invalidas");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
+    // Refresh token invalido/expirado
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<Map<String, Object>> handleJwtException(JwtException ex) {
+        Map<String, Object> body = Map.of("success", false, "message", "Token invalido o expirado");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 

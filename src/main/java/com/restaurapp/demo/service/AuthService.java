@@ -12,6 +12,7 @@ import com.restaurapp.demo.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +35,7 @@ public class AuthService {
 
         // Solo usuarios activos
         User u = userRepository.findByEmailAndActivoTrue(req.getEmail())
-                .orElseThrow(); // si llegaste aqui y no existe/activo, algo raro paso
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado o inactivo"));
 
         // Claim "rol" en minusculas (alineado a la doc)
         String access = jwtService.generateAccessToken(
@@ -56,7 +57,7 @@ public class AuthService {
         String email = jwtService.parse(req.getRefresh_token()).getBody().getSubject();
 
         User u = userRepository.findByEmailAndActivoTrue(email)
-                .orElseThrow();
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado o inactivo"));
 
         String access = jwtService.generateAccessToken(
                 u.getEmail(),
