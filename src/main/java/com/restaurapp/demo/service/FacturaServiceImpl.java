@@ -6,6 +6,7 @@ import com.restaurapp.demo.dto.FacturaDto;
 import com.restaurapp.demo.dto.FacturaListDto;
 import com.restaurapp.demo.repository.FacturaRepository;
 import com.restaurapp.demo.repository.PedidoRepository;
+import com.restaurapp.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +29,9 @@ public class FacturaServiceImpl implements FacturaService {
     private final FacturaRepository facturaRepo;
     private final PedidoRepository pedidoRepo;
     private final PagoService pagoService;
+    private final UserRepository userRepo;
 
-    private FacturaDto toDto(Factura f) {
+    private FacturaDto toDto(Factura f, String meseroNombre) {
         var p = f.getPedido();
         return new FacturaDto(
                 f.getId(),
@@ -31,13 +39,18 @@ public class FacturaServiceImpl implements FacturaService {
                 p.getId(),
                 p.getMesa().getId(),
                 p.getMesa().getNumero(),
-                p.getMeseroId(),            // UUID en DTO si corresponde
+                p.getMeseroId(),
+                meseroNombre,
                 f.getTotal(),
                 f.getFechaEmision()
         );
     }
 
-    private FacturaListDto toListDto(Factura f) {
+    private FacturaDto toDto(Factura f) {
+        return toDto(f, obtenerNombreMesero(f.getPedido().getMeseroId()));
+    }
+
+    private FacturaListDto toListDto(Factura f, String meseroNombre) {
         var p = f.getPedido();
         return new FacturaListDto(
                 f.getId(),
@@ -45,7 +58,8 @@ public class FacturaServiceImpl implements FacturaService {
                 p.getId(),
                 p.getMesa().getId(),
                 p.getMesa().getNumero(),
-                p.getMeseroId(),            // UUID en DTO si corresponde
+                p.getMeseroId(),
+                meseroNombre,
                 f.getTotal(),
                 f.getFechaEmision()
         );
@@ -103,8 +117,9 @@ public class FacturaServiceImpl implements FacturaService {
         Sort sortObj = buildSort(sort); // tu helper de sort
         Pageable pageable = PageRequest.of(p, s, sortObj);
 
-        return facturaRepo.buscar(mesaId, meseroId, desde, hasta, pageable)
-                .map(this::toListDto);
+        Page<Factura> result = facturaRepo.buscar(mesaId, meseroId, desde, hasta, pageable);
+        Map<UUID, String> nombres = cargarNombresMeseros(result.getContent());
+        return result.map(f -> toListDto(f, nombres.get(f.getPedido().getMeseroId())));
     }
 
 
@@ -120,5 +135,26 @@ public class FacturaServiceImpl implements FacturaService {
 
         Sort.Direction direction = ("asc".equals(dir)) ? Sort.Direction.ASC : Sort.Direction.DESC;
         return Sort.by(direction, field.isEmpty() ? defaultField : field);
+    }
+    private Map<UUID, String> cargarNombresMeseros(List<Factura> facturas) {
+        Set<UUID> ids = facturas.stream()
+                .map(f -> f.getPedido().getMeseroId())
+                .filter(id -> id != null)
+                .collect(Collectors.toSet());
+        if (ids.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<UUID, String> map = new HashMap<>();
+        userRepo.findAllById(ids).forEach(u -> map.put(u.getId(), u.getNombre()));
+        return map;
+    }
+
+    private String obtenerNombreMesero(UUID meseroId) {
+        if (meseroId == null) {
+            return null;
+        }
+        return userRepo.findById(meseroId)
+                .map(com.restaurapp.demo.domain.User::getNombre)
+                .orElse(null);
     }
 }

@@ -11,6 +11,7 @@ public record FacturaListDto(
         Long mesa_id,
         String mesa_numero,
         java.util.UUID mesero_id,
+        String mesero_nombre,
         BigDecimal total,
         LocalDateTime fecha_emision
 ) {}
