@@ -1,11 +1,15 @@
 package com.restaurapp.demo.service;
 
 import com.restaurapp.demo.domain.Mesa;
+import com.restaurapp.demo.domain.PagoEstado;
 import com.restaurapp.demo.domain.Pedido;
 import com.restaurapp.demo.domain.PedidoEstado;
 import com.restaurapp.demo.repository.MenuRepository;
 import com.restaurapp.demo.repository.MesaRepository;
+import com.restaurapp.demo.repository.PagoRepository;
 import com.restaurapp.demo.repository.PedidoRepository;
+import com.restaurapp.demo.repository.FacturaRepository;
+import com.restaurapp.demo.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +40,13 @@ class PedidoServiceImplTest {
     private MenuRepository menuRepository;
 
     @Mock
-    private PagoService pagoService;
+    private PagoRepository pagoRepository;
+
+    @Mock
+    private FacturaRepository facturaRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private PedidoServiceImpl service;
@@ -57,7 +67,7 @@ class PedidoServiceImplTest {
     @Test
     void cancelarLanzaCuandoHayPagosRegistrados() {
         when(pedidoRepository.findById(15L)).thenReturn(Optional.of(pedido));
-        when(pagoService.calcularSaldoPendiente(15L)).thenReturn(new BigDecimal("60.00"));
+        when(pagoRepository.sumByPedidoAndEstado(15L, PagoEstado.APLICADO)).thenReturn(new BigDecimal("60.00"));
 
         assertThatThrownBy(() -> service.cancelar(15L))
                 .isInstanceOf(IllegalStateException.class)
@@ -67,7 +77,7 @@ class PedidoServiceImplTest {
     @Test
     void cancelarCambiaEstadoCuandoNoHayPagos() {
         when(pedidoRepository.findById(15L)).thenReturn(Optional.of(pedido));
-        when(pagoService.calcularSaldoPendiente(15L)).thenReturn(new BigDecimal("100.00"));
+        when(pagoRepository.sumByPedidoAndEstado(15L, PagoEstado.APLICADO)).thenReturn(BigDecimal.ZERO);
 
         service.cancelar(15L);
 

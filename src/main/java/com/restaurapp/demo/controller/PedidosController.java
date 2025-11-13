@@ -93,6 +93,21 @@ public class PedidosController {
         service.enviarACocina(id);
         return Map.of("success", true, "message", "Pedido enviado a cocina.");
     }
+
+    @PostMapping("/{id}/marcar-listo")
+    @PreAuthorize("hasAnyRole('ADMIN','MESERO','COCINERO')")
+    public Map<String, Object> marcarListo(@PathVariable Long id) {
+        service.marcarListo(id);
+        return Map.of("success", true, "message", "Pedido marcado como LISTO.");
+    }
+
+    @PostMapping("/{id}/marcar-entregado")
+    @PreAuthorize("hasAnyRole('ADMIN','MESERO')")
+    public Map<String, Object> marcarEntregado(@PathVariable Long id) {
+        service.marcarEntregado(id);
+        return Map.of("success", true, "message", "Pedido marcado como ENTREGADO.");
+    }
+
     // POST /pedidos/{id}/cancelar
     @PostMapping("/{id}/cancelar")
     @PreAuthorize("hasAnyRole('ADMIN','MESERO')")

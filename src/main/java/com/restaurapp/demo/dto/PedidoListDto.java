@@ -8,7 +8,11 @@ public record PedidoListDto(
         Long mesa_id,
         String mesa_numero,
         UUID mesero_id,
+        String mesero_nombre,
         String estado,
         BigDecimal total,
-        LocalDateTime created_at
+        LocalDateTime created_at,
+        BigDecimal saldo_pendiente,
+        boolean listo_para_entrega,
+        boolean puede_facturar
 ) {}

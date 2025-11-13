@@ -11,10 +11,14 @@ public record PedidoDto(
         Long mesa_id,
         String mesa_numero,
         UUID mesero_id,
+        String mesero_nombre,
         String estado,
         BigDecimal total,
         String notas,
         LocalDateTime created_at,
         LocalDateTime updated_at,
+        BigDecimal saldo_pendiente,
+        boolean listo_para_entrega,
+        boolean puede_facturar,
         List<PedidoItemDto> items
 ) {}

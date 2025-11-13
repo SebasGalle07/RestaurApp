@@ -16,5 +16,7 @@ public interface PedidoService {
     PedidoDto detalle(Long id);
     void patch(Long id, PedidoPatchDto dto);
     void enviarACocina(Long id);
+    void marcarListo(Long id);
+    void marcarEntregado(Long id);
     void cancelar(Long id);
 }
